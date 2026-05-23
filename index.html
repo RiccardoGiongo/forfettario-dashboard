@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Forfettario Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap">
+<style>
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-theme="dark"] {
+  --bg: #0f1115; --bg-elev: #161922; --bg-elev-2: #1d2230; --bg-bar: #0b0d12;
+  --border: #252a38; --border-strong: #353c4f;
+  --text: #e8eaf0; --text-dim: #8a92a8; --text-faint: #5a627a;
+  --accent: #d4a574; --accent-soft: rgba(212, 165, 116, 0.12); --accent-glow: rgba(212, 165, 116, 0.25);
+  --success: #7fb685; --danger: #d97757;
+  --revenue: #7fb685; --spese: #d97757;
+  --grid-line: rgba(255, 255, 255, 0.04);
+}
+[data-theme="light"] {
+  --bg: #f5f1ea; --bg-elev: #faf8f4; --bg-elev-2: #efeae0; --bg-bar: #ebe5d8;
+  --border: #ddd5c4; --border-strong: #c5bba5;
+  --text: #2a2722; --text-dim: #6b6557; --text-faint: #a39a87;
+  --accent: #a8744a; --accent-soft: rgba(168, 116, 74, 0.1); --accent-glow: rgba(168, 116, 74, 0.2);
+  --success: #5a8a60; --danger: #b85a3e;
+  --revenue: #5a8a60; --spese: #b85a3e;
+  --grid-line: rgba(0, 0, 0, 0.05);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.005em;
+  transition: background 0.3s, color 0.3s;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--bg-bar);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 32px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000));
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-family: var(--font-display);
+  font-weight: 600; font-size: 20px;
+  color: var(--bg-bar); font-style: italic;
+}
+.brand-text h1 {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: 17px;
+  letter-spacing: -0.02em; line-height: 1; font-style: italic;
+}
+.brand-text span {
+  font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-faint); font-weight: 500;
+}
+.topnav { display: flex; gap: 4px; justify-content: center; }
+.nav-item {
+  background: transparent; border: none;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: 13.5px; font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: var(--transition); letter-spacing: -0.01em;
+}
+.nav-item:hover { background: var(--bg-elev); color: var(--text); }
+.nav-item.active { background: var(--accent-soft); color: var(--accent); }
+.nav-icon { font-size: 14px; opacity: 0.8; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.theme-toggle {
+  background: var(--bg-elev); border: 1px solid var(--border);
+  color: var(--text); width: 36px; height: 36px;
+  border-radius: 8px; cursor: pointer; font-size: 14px;
+  display: grid; place-items: center; transition: var(--transition);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+.main { padding: 32px 36px 36px; }
+.view-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 24px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.overline {
+  font-size: 10px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--text-faint);
+  font-weight: 600; margin-bottom: 6px;
+}
+.view-header h2 {
+  font-family: var(--font-display);
+  font-weight: 400; font-size: 32px;
+  letter-spacing: -0.02em; line-height: 1.1; font-style: italic;
+}
+.view-header h2 span {
+  font-style: normal; font-weight: 300;
+  color: var(--text-dim); font-size: 26px;
+}
+.info-btn {
+  background: var(--bg-elev); border: 1px solid var(--border);
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  font-family: var(--font-display); font-style: italic;
+  font-size: 18px; font-weight: 600; color: var(--text-dim);
+  transition: var(--transition);
+}
+.info-btn:hover {
+  background: var(--accent-soft); color: var(--accent);
+  border-color: var(--accent); transform: scale(1.05);
+}
+
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin-bottom: 24px;
+}
+.kpi {
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+}
+.kpi:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.kpi-label {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-faint); font-weight: 600;
+}
+.kpi-value {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 30px; letter-spacing: -0.02em;
+  line-height: 1.1; color: var(--text);
+}
+.kpi-sub { font-size: 11.5px; color: var(--text-dim); margin-top: auto; }
+.kpi-primary {
+  background: linear-gradient(135deg, var(--bg-elev) 0%, var(--bg-elev-2) 100%);
+  border-color: var(--border-strong);
+}
+.kpi-primary .kpi-value { color: var(--accent); }
+.kpi-net {
+  background: linear-gradient(135deg, var(--accent-soft), transparent);
+  border-color: var(--accent);
+}
+.kpi-net .kpi-value { color: var(--accent); font-style: italic; font-size: 34px; }
+
+.chart-card {
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  position: relative;
+}
+.chart-head {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 18px;
+}
+.chart-head h3 {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: 19px;
+  font-style: italic; letter-spacing: -0.01em;
+}
+.chart-legend { display: flex; gap: 18px; font-size: 12px; color: var(--text-dim); }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; }
+.dot-revenue { background: var(--revenue); }
+.dot-spese { background: var(--spese); }
+.chart-wrap { position: relative; }
+#chart-canvas { width: 100%; height: 320px; display: block; }
+
+.tooltip {
+  position: absolute;
+  background: var(--bg-bar);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 10px 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  min-width: 140px;
+  z-index: 10;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .tt-month {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 14px; color: var(--text); margin-bottom: 6px;
+}
+.tooltip .tt-row {
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: 11.5px; padding: 2px 0;
+}
+.tooltip .tt-label { color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+.tooltip .tt-value { font-family: var(--font-mono); font-weight: 500; color: var(--text); }
+.tooltip .tt-net { color: var(--success); font-weight: 600; padding-top: 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 500;
+  display: grid; place-items: center; padding: 40px;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  max-width: 680px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+  padding: 32px;
+  transform: scale(0.96);
+  transition: transform 0.25s;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+}
+.modal-backdrop.open .modal { transform: scale(1); }
+.modal-head {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 20px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.modal-head h3 {
+  font-family: var(--font-display);
+  font-weight: 400; font-size: 26px;
+  font-style: italic; letter-spacing: -0.02em;
+}
+.modal-close {
+  background: transparent; border: 1px solid var(--border);
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer; color: var(--text-dim); font-size: 16px;
+  display: grid; place-items: center; transition: var(--transition);
+}
+.modal-close:hover { color: var(--danger); border-color: var(--danger); }
+.breakdown-flow {
+  display: flex; flex-direction: column; gap: 1px;
+  background: var(--border); border-radius: 8px; overflow: hidden;
+  margin-bottom: 20px;
+}
+.flow-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  gap: 16px; padding: 12px 16px;
+  background: var(--bg-elev); font-size: 13px;
+  align-items: center; transition: background 0.15s;
+}
+.flow-row:hover { background: var(--bg-elev-2); }
+.flow-row.flow-total { background: var(--bg-elev-2); font-weight: 600; }
+.flow-row.flow-final {
+  background: var(--accent-soft); color: var(--accent);
+  font-family: var(--font-display); font-style: italic; font-size: 15px;
+}
+.flow-label { color: var(--text-dim); }
+.flow-total .flow-label, .flow-final .flow-label { color: inherit; }
+.flow-formula { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.flow-value { font-family: var(--font-mono); font-weight: 500; text-align: right; min-width: 130px; }
+.legal-note {
+  font-size: 12.5px; color: var(--text-dim);
+  line-height: 1.65; padding: 14px;
+  background: var(--bg-elev-2); border-radius: 8px;
+}
+.legal-note strong { color: var(--text); }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">€</div>
+    <div class="brand-text">
+      <h1>Forfettario</h1>
+      <span>Manager</span>
+    </div>
+  </div>
+  <nav class="topnav">
+    <button class="nav-item active"><span class="nav-icon">◧</span> Dashboard 2026</button>
+  </nav>
+  <div class="topbar-right">
+    <button class="theme-toggle" id="theme-toggle">☾</button>
+  </div>
+</div>
+
+<main class="main">
+  <header class="view-header">
+    <div>
+      <p class="overline">Riepilogo annuale — Agente immobiliare Rovereto</p>
+      <h2>Dashboard <span>2026</span></h2>
+    </div>
+    <button class="info-btn" id="info-btn" title="Come si calcola">i</button>
+  </header>
+
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <div class="chart-card">
+    <div class="chart-head">
+      <h3>Netto mensile</h3>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="dot dot-revenue"></span>Netto in tasca</span>
+        <span class="legend-item"><span class="dot dot-spese"></span>Spese</span>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart-canvas"></canvas>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <p class="overline">Informazioni</p>
+        <h3>Come si calcola il netto</h3>
+      </div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="breakdown-flow" id="breakdown-flow"></div>
+    <div class="legal-note">
+      <strong>Riferimento normativo.</strong> Calcoli secondo la Legge 190/2014 (regime forfettario). Nel forfettario le spese reali (carburante, ecc.) <strong>non sono deducibili</strong> dal reddito imponibile, che si determina applicando il coefficiente di redditività al fatturato. Vengono comunque sottratte dal netto per dare la liquidità reale disponibile. Verifica sempre con il commercialista.
+    </div>
+  </div>
+</div>
+
+<script>
+const FATTURE = [
+  {data:'2026-01-15', importo:4200}, {data:'2026-03-08', importo:1500},
+  {data:'2026-03-22', importo:7000}, {data:'2026-04-10', importo:6300},
+  {data:'2026-05-05', importo:12000}, {data:'2026-06-18', importo:9800},
+  {data:'2026-07-12', importo:7500}, {data:'2026-09-20', importo:5400},
+  {data:'2026-10-08', importo:11200}, {data:'2026-11-14', importo:8600},
+  {data:'2026-12-03', importo:5000}
+];
+const SPESE = [
+  {data:'2026-01-10', importo:95}, {data:'2026-01-25', importo:110}, {data:'2026-01-30', importo:115},
+  {data:'2026-02-15', importo:45}, {data:'2026-02-20', importo:90},
+  {data:'2026-03-12', importo:105}, {data:'2026-03-25', importo:305},
+  {data:'2026-04-08', importo:100}, {data:'2026-04-22', importo:190},
+  {data:'2026-05-15', importo:120}, {data:'2026-05-28', importo:260},
+  {data:'2026-06-10', importo:130}, {data:'2026-06-22', importo:220},
+  {data:'2026-07-08', importo:115}, {data:'2026-07-20', importo:145},
+  {data:'2026-08-15', importo:90},
+  {data:'2026-09-10', importo:95}, {data:'2026-09-25', importo:115},
+  {data:'2026-10-12', importo:135}, {data:'2026-10-28', importo:245},
+  {data:'2026-11-15', importo:110}, {data:'2026-11-30', importo:110},
+  {data:'2026-12-12', importo:150}
+];
+const SETTINGS = { coeff: 78, aliqContrib: 26.07, aliqImp: 5, massimale: 119650 };
+
+const fmtEUR = n => new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR', minimumFractionDigits: 2 }).format(n || 0);
+const MESI_FULL = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MESI = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+function calcola() {
+  const fatturato = FATTURE.reduce((s,f) => s + f.importo, 0);
+  const speseVive = SPESE.reduce((s,x) => s + x.importo, 0);
+  const imp = fatturato * (SETTINGS.coeff / 100);
+  const base = Math.min(imp, SETTINGS.massimale);
+  const contrib = base * (SETTINGS.aliqContrib / 100);
+  const impNetto = Math.max(0, imp - contrib);
+  const imposta = impNetto * (SETTINGS.aliqImp / 100);
+  const netto = fatturato - contrib - imposta - speseVive;
+  return { fatturato, speseVive, imp, contrib, impNetto, imposta, netto };
+}
+
+function aggregaMese() {
+  const fatt = new Array(12).fill(0);
+  const spesa = new Array(12).fill(0);
+  FATTURE.forEach(f => { fatt[new Date(f.data).getMonth()] += f.importo; });
+  SPESE.forEach(s => { spesa[new Date(s.data).getMonth()] += s.importo; });
+  const c = calcola();
+  const netto = fatt.map((f, i) => {
+    if (f === 0) return 0;
+    const ratio = f / c.fatturato;
+    return Math.max(0, f - c.contrib * ratio - c.imposta * ratio - spesa[i]);
+  });
+  return { fatt, spesa, netto };
+}
+
+function renderDashboard() {
+  const c = calcola();
+  const kpi = [
+    { l: 'Fatturato lordo', v: fmtEUR(c.fatturato), s: FATTURE.length + ' fatture', primary: true },
+    { l: 'Reddito imponibile', v: fmtEUR(c.imp), s: 'coeff. ' + SETTINGS.coeff + '%' },
+    { l: 'Contributi INPS', v: fmtEUR(c.contrib), s: SETTINGS.aliqContrib + '%' },
+    { l: 'Imposta sostitutiva', v: fmtEUR(c.imposta), s: SETTINGS.aliqImp + '%' },
+    { l: 'Spese vive', v: fmtEUR(c.speseVive), s: 'non deducibili' },
+    { l: 'Netto in tasca', v: fmtEUR(c.netto), s: 'fatturato − tasse − contributi − spese', net: true }
+  ];
+  document.getElementById('kpi-grid').innerHTML = kpi.map(k => `
+    <div class="kpi ${k.primary?'kpi-primary':''} ${k.net?'kpi-net':''}">
+      <span class="kpi-label">${k.l}</span>
+      <span class="kpi-value">${k.v}</span>
+      <span class="kpi-sub">${k.s}</span>
+    </div>
+  `).join('');
+  attachSpotlight();
+  renderBreakdown(c);
+  drawChart();
+}
+
+function renderBreakdown(c) {
+  const rows = [
+    { l: 'Fatturato lordo', f: 'Σ fatture emesse', v: fmtEUR(c.fatturato) },
+    { l: 'Reddito imponibile lordo', f: `Fatturato × ${SETTINGS.coeff}%`, v: fmtEUR(c.imp) },
+    { l: 'Contributi previdenziali', f: `Imponibile × ${SETTINGS.aliqContrib}%`, v: '− ' + fmtEUR(c.contrib) },
+    { l: 'Imponibile netto fiscale', f: 'Imponibile − Contributi', v: fmtEUR(c.impNetto), total: true },
+    { l: 'Imposta sostitutiva', f: `Imp. netto × ${SETTINGS.aliqImp}%`, v: '− ' + fmtEUR(c.imposta) },
+    { l: 'Spese vive (non deducibili)', f: 'Σ spese reali', v: '− ' + fmtEUR(c.speseVive) },
+    { l: 'Netto realmente in tasca', f: 'Fatturato − contrib. − imposta − spese', v: fmtEUR(c.netto), final: true }
+  ];
+  document.getElementById('breakdown-flow').innerHTML = rows.map(r => `
+    <div class="flow-row ${r.total?'flow-total':''} ${r.final?'flow-final':''}">
+      <span class="flow-label">${r.l}</span>
+      <span class="flow-formula">${r.f}</span>
+      <span class="flow-value">${r.v}</span>
+    </div>
+  `).join('');
+}
+
+function attachSpotlight() {
+  document.querySelectorAll('.kpi').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const glow = getComputedStyle(document.body).getPropertyValue('--accent-glow').trim();
+      card.style.background = `radial-gradient(380px circle at ${x}px ${y}px, ${glow}, transparent 60%), var(--bg-elev)`;
+      card.style.boxShadow = `0 8px 28px ${glow}`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.background = '';
+      card.style.boxShadow = '';
+    });
+  });
+}
+
+let barRects = [];
+function drawChart() {
+  const canvas = document.getElementById('chart-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const cssWidth = canvas.parentElement.clientWidth;
+  const cssHeight = 320;
+  canvas.style.width = cssWidth + 'px';
+  canvas.style.height = cssHeight + 'px';
+  canvas.width = cssWidth * dpr;
+  canvas.height = cssHeight * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, cssWidth, cssHeight);
+  const { fatt, spesa, netto } = aggregaMese();
+  const styles = getComputedStyle(document.body);
+  const colRev = styles.getPropertyValue('--revenue').trim();
+  const colSpe = styles.getPropertyValue('--spese').trim();
+  const colText = styles.getPropertyValue('--text-dim').trim();
+  const colFaint = styles.getPropertyValue('--text-faint').trim();
+  const colGrid = styles.getPropertyValue('--grid-line').trim();
+  const totals = netto.map((n, i) => n + spesa[i]);
+  const maxVal = Math.max(...totals, 1);
+  const niceMax = niceCeil(maxVal);
+  const padding = { top: 24, right: 16, bottom: 36, left: 64 };
+  const w = cssWidth - padding.left - padding.right;
+  const h = cssHeight - padding.top - padding.bottom;
+  ctx.font = "11px 'JetBrains Mono', monospace";
+  ctx.fillStyle = colFaint;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let i = 0; i <= 5; i++) {
+    const y = padding.top + (h * i / 5);
+    const val = niceMax * (1 - i / 5);
+    ctx.strokeStyle = colGrid; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(padding.left + w, y); ctx.stroke();
+    ctx.fillText(formatAxis(val), padding.left - 10, y);
+  }
+  const groupW = w / 12;
+  const barW = Math.min(groupW * 0.6, 40);
+  barRects = [];
+  for (let m = 0; m < 12; m++) {
+    const xCenter = padding.left + groupW * m + groupW / 2;
+    const xBar = xCenter - barW / 2;
+    const nettoH = (netto[m] / niceMax) * h;
+    const speseH = (spesa[m] / niceMax) * h;
+    const yBase = padding.top + h;
+    if (nettoH > 0) {
+      ctx.fillStyle = colRev;
+      ctx.fillRect(xBar, yBase - nettoH, barW, nettoH);
+    }
+    if (speseH > 0) {
+      ctx.fillStyle = colSpe;
+      roundRectTop(ctx, xBar, yBase - nettoH - speseH, barW, speseH, 4);
+      ctx.fill();
+    }
+    barRects.push({ x: xBar, y: yBase - (nettoH + speseH), w: barW, h: nettoH + speseH, month: m });
+  }
+  ctx.fillStyle = colText;
+  ctx.font = "11px 'Manrope', sans-serif";
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let m = 0; m < 12; m++) {
+    const x = padding.left + groupW * m + groupW / 2;
+    ctx.fillText(MESI[m], x, padding.top + h + 10);
+  }
+}
+function roundRectTop(ctx, x, y, w, h, r) {
+  if (h <= 0) return;
+  r = Math.min(r, h, w/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h);
+  ctx.lineTo(x, y+h);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+function niceCeil(v) {
+  if (v === 0) return 100;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  const r = v / mag;
+  let nice = r <= 1 ? 1 : r <= 2 ? 2 : r <= 5 ? 5 : 10;
+  return nice * mag;
+}
+function formatAxis(v) {
+  if (v >= 1000) return (v/1000).toFixed(v>=10000?0:1) + 'k';
+  return v.toFixed(0);
+}
+
+const canvas = document.getElementById('chart-canvas');
+const tooltip = document.getElementById('tooltip');
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left;
+  const my = e.clientY - r.top;
+  const hit = barRects.find(b => mx >= b.x && mx <= b.x + b.w && my >= b.y - 8 && my <= b.y + b.h + 8);
+  if (hit) {
+    const { fatt, spesa, netto } = aggregaMese();
+    const m = hit.month;
+    tooltip.innerHTML = `
+      <div class="tt-month">${MESI_FULL[m]}</div>
+      <div class="tt-row"><span class="tt-label">Fatturato</span><span class="tt-value">${fmtEUR(fatt[m])}</span></div>
+      <div class="tt-row"><span class="tt-label"><span class="dot dot-spese"></span>Spese</span><span class="tt-value">${fmtEUR(spesa[m])}</span></div>
+      <div class="tt-row tt-net"><span class="tt-label"><span class="dot dot-revenue"></span>Netto</span><span class="tt-value">${fmtEUR(netto[m])}</span></div>
+    `;
+    tooltip.classList.add('visible');
+    const ttRect = tooltip.getBoundingClientRect();
+    let left = mx + 14;
+    if (left + ttRect.width > r.width) left = mx - ttRect.width - 14;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = Math.max(0, my - ttRect.height / 2) + 'px';
+    canvas.style.cursor = 'pointer';
+  } else {
+    tooltip.classList.remove('visible');
+    canvas.style.cursor = 'default';
+  }
+});
+canvas.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', t);
+  document.getElementById('theme-toggle').textContent = t === 'dark' ? '☾' : '☀';
+  drawChart();
+});
+
+const modal = document.getElementById('modal');
+document.getElementById('info-btn').addEventListener('click', () => modal.classList.add('open'));
+document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('open'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+window.addEventListener('resize', drawChart);
+renderDashboard();
+setTimeout(drawChart, 100);
+</script>
+</body>
+</html>
